@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import RestaurantNavbar from './components/RestaurantNavbar'
 import Home from './components/Home'
 import BookATable from './components/BookATable'
+import Bookings from './components/Bookings'
 
 // questa riga fa in modo che il foglio css di bootstrap venga aggiunto a App
 // e di conseguenza a tutti i componenti React
@@ -29,6 +30,9 @@ function App() {
       {/* <RestaurantNavbar illuminaLink="Prenota" /> */}
       {/* qui vorrei illuminare Admin */}
       {/* <RestaurantNavbar illuminaLink="Admin" /> */}
+
+      {/* Inseriamo qui il nostro componente di "backoffice" */}
+      <Bookings />
 
       {/* Inseriremo qui il nostro form di prenotazione */}
       <BookATable />
