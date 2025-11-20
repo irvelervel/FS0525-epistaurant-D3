@@ -80,6 +80,7 @@ class BookATable extends Component {
   // situazione
 
   render() {
+    // console.log('RENDER DI BOOKATABLE')
     return (
       <Container
       // esempio classe condizionale

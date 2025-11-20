@@ -57,8 +57,38 @@ class Bookings extends Component {
       })
   }
 
+  // N.B: ogni volta che in un componente viene eseguito un setState(), react
+  // RE-INVOCA automaticamente il metodo render()
+
+  // render() è un METODO DI LIFE-CYCLE DEL COMPONENTE A CLASSE.
+  // render() viene eseguito automaticamente da React quando il componente SI "MONTA"
+  // render() viene anche RE-INVOCATO ad ogni CAMBIO di stato e ad ogni cambio di props: questo serve
+  // internamente a mantenere "in sync" i DATI del componente con la sua INTERFACCIA
+
+  // quindi, se render() non è il posto giusto per invocare la nostra funzione getBookings
+  // che fa una fetch e salva il risultato nello stato, dove la invocheremo?
+
+  // ci serve un posto che NON venga ri-eseguito quando facciamo un setState
+  // ci serve un posto che ci garantisca venire eseguito UNA VOLTA SOLA
+  // ci serve un posto che venga eseguito DOPO la prima esecuzione di render()
+  // -> in questo modo la PRIMA invocazione di render() servirà a portare nella pagina
+  // le parti di interfaccia "statiche": i titoli, i container, gli indicatori di caricamento
+
+  // la risposta a TUTTE queste richieste è un secondo metodo di lifecycle
+  // il metodo componentDidMount()
+  // è un metodo PERFETTO per invocare tutte quelle operazioni che necessitano
+  // di venire eseguite all'avvio del componente (ad es. le fetch)
+
+  componentDidMount() {
+    // viene eseguito DOPO il primo render
+    console.log('SONO COMPONENTDIDMOUNT')
+    // viene eseguito una volta sola
+    // NON verrà ri-eseguito a cambi di state o di props
+
+    this.getBookings()
+  }
+
   render() {
-    // this.getBookings()
     console.log('SONO IN RENDER')
     return (
       <Container>
