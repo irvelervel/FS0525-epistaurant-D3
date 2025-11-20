@@ -2,7 +2,7 @@
 // e le mostrerà all'interno di una ListGroup di react-bootstrap
 
 import { Component } from 'react'
-import { Col, Container, Row, ListGroup } from 'react-bootstrap'
+import { Col, Container, Row, ListGroup, Spinner, Alert } from 'react-bootstrap'
 
 // questo processo l'abbiamo già esplorato all'interno di un documento HTML
 // ma non sappiamo come approcciare il problema nei singoli componenti React
@@ -19,8 +19,9 @@ import { Col, Container, Row, ListGroup } from 'react-bootstrap'
 
 class Bookings extends Component {
   state = {
-    prenotazioni: [], // ottimo valore iniziale, ospiterà in futuro
-    // un array di oggetti
+    prenotazioni: [], // ottimo valore iniziale, ospiterà in futuro un array di oggetti
+    loading: true,
+    error: false,
   }
 
   getBookings = function () {
@@ -50,10 +51,17 @@ class Bookings extends Component {
         this.setState({
           prenotazioni: arrayOfBookings, // sovrascrivo l'array vuoto iniziale
           // con un array di prenotazioni
+          // quando ho recuperato le prenotazioni con successo, SPENGO lo spinner
+          loading: false,
         })
       })
       .catch((err) => {
         console.log('Errore nella chiamata', err)
+        // se otteniamo un errore, dobbiamo comunque terminare la fase di caricamento
+        this.setState({
+          loading: false,
+          error: true,
+        })
       })
   }
 
@@ -99,6 +107,28 @@ class Bookings extends Component {
         </Row>
         <Row className="justify-content-center my-3">
           <Col xs={12} md={6}>
+            {/* RENDERING CONDIZIONALE */}
+
+            {/* true && true -> true */}
+            {
+              // short circuit: utile quando dovete MOSTRARE una cosa oppure no
+              this.state.loading && (
+                <div className="text-center">
+                  <Spinner animation="border" variant="success" />
+                </div>
+              )
+            }
+
+            {!this.state.loading && (
+              <>
+                {this.state.error ? (
+                  <Alert variant="danger">Errore nel caricamento</Alert>
+                ) : (
+                  <Alert variant="success">Caricamento completato!</Alert>
+                )}
+              </>
+            )}
+
             <ListGroup>
               {
                 // qui farò un map dell'array delle prenotazioni e per
@@ -120,3 +150,25 @@ class Bookings extends Component {
 }
 
 export default Bookings
+
+// STEP DI LIFECYCLE DI BOOKINGS.JSX
+
+// 1) React inizializza lo stato del componente (con prenotazioni = []),
+// invoca il metodo render() per la prima volta e apporterà di conseguenza
+// nel DOM tutte le parti STATICHE dell'interfaccia (containers, rows, cols,
+// h2 etc.)
+
+// 2) Finito il primo render(), React cerca se nel componente è presente un
+// metodo chiamato "componentDidMount"; nel caso questo metodo venga trovato,
+// lo eseguirà in questo momento, andando a compiere tutte quelle tipiche
+// operazioni asincrone che devono venire lanciate nella fase di caricamento
+// nel nostro caso, componentDidMount lancerà getBookings che recupererà le
+// prenotazioni a DB e le salverà nello state con un this.setState()
+
+// 3) poichè l'esecuzione di getBookings ha provocato un aggiornamento dello
+// state (grazie a setState()), il componente subisce una fase di "aggiornamento":
+// render() di conseguenza viene re-invocato una seconda volta.
+// React si accorgerà che il 90% del DOM già presente nel browser NON necessità
+// di riscritture e di fatto apporterà nella pagina solamente le differenze:
+// queste differenze riguardano la ListGroup, che a seguito del nuovo valore dello
+// stato va riscritta con gli elementi di lista necessari.
